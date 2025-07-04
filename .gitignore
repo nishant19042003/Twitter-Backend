@@ -1,0 +1,70 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Build
+dist/
+build/
+.tmp/
+.temp/
+out/
+
+# Runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Environment files
+.env
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Dependency directories
+jspm_packages/
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+
+# Compiled source #
+*.com
+*.class
+*.jar
+*.pyc
+*.pyo
+*.pyd
+*.o
+*.obj
+
+# Others
+*.swp
+*.bak
+*.tmp

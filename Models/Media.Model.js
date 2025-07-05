@@ -1,18 +1,12 @@
 import mongoose from "mongoose";
-const mediaSchema=new mongoose.Schema({
-    owner:{
+const MediaSchema=mongoose.Schema({
+    tweet:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+        ref:"Tweet"
     },
     media_url:{
         type:String,
         required:true
-    },
-    tweet:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Tweet",
-        default:null
     }
-},{timestamps:true});
-export const Media=mongoose.model('Media',mediaSchema);
+},{timestramps:true})
+export const Media=new mongoose.model("Media",MediaSchema);

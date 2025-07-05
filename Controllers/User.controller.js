@@ -80,3 +80,86 @@ export const login=async(req,res)=>{
         new ApiResponse(200,{user: { ...loggedinuser },accessToken,refreshToken},"user logged in successfully")
     )
 }
+export const logout=async(req,res)=>{
+    //remove refresh token from User
+    await  User.findByIdAndUpdate(req.user._id,
+    {
+        $unset: {
+            refreshtoken: 1 // this removes the field from document
+        }
+        
+    },
+    {
+        new :true
+    }
+   )
+    const options={
+        httpOnly:true,
+        secure:true,
+    }  
+
+    
+    //remove token form  res cookies 
+    return res.status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(new ApiResponse(200,{},"user logged out"))
+}
+export const refreshaccesstoken=async(req,res)=>{
+    //incoming refresh token
+    const incomingrefreshtoken=req.cookies.refreshToken||req.body.refreshtoken;
+    //if authenticated then user will be there get user
+    const id=req.user._id;
+    const user=await User.findById(id);
+    if(user.refresh_token!==incomingrefreshtoken){
+        throw new ApiError(400,"bad request");
+    }
+    //generate new accesstoken 
+    const {newaccesstoken,newRefreshToken}=await generateAccessandrefreshtoken(id);
+    //update user
+    //send that in res cookie
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res.staus(200)
+    .cookie("accesstoken",newaccesstoken,options)
+    .cookie("refreshtoken",newrefreshtoken,options)
+    .json(
+        new ApiResponse(
+            200,
+            {newaccessToken, refreshToken: newRefreshToken},
+            "Access token refreshed"
+        )
+    )
+}
+export const getvarification=async(req,res)=>{
+    //find the user
+    //update thr user
+    //retun response
+}
+export const updatepassword=async(req,res)=>{
+    //take newpassword
+    //get the userid from req
+    //find the user
+    //hash the password 
+    //update the password
+    //return  password updated
+}
+export const updateavatar=async(req,res)=>{
+    //get new avatar
+    //get user id from req
+    //get user
+    //update avatar field
+}
+export const updateuserprofile=async(req,res)=>{
+    //get username,email,name and bio 
+    //find the user and update these fields
+}
+export const getchannelinfo=async(req,res)=>{
+    //tweets,medias,likes,followers,following get all these and send
+}
+export const getprofile=async(req,res)=>{
+    //get user and send with no password and no rerfeshtoken
+}

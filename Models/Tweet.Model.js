@@ -21,11 +21,7 @@ const tweetschema=mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Tweet",
         default:null
-    },
-    original_tweet:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Tweet",
-        default:null
     }
+    
 },{timestramps:true});
-export const User=mongoose.model('Tweet',tweetSchema);
+export const Tweet=mongoose.model('Tweet',tweetSchema);

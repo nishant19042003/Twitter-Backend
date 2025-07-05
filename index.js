@@ -10,6 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 import connectToDatabase from './Database/db.js';
 import userRouter from './Routers/User.router.js';
 import tweetrouter from './Routers/Tweet.router.js';
+import communityrouter from './Routers/Community.router.js';
 const PORT = process.env.PORT ;
 connectToDatabase();
 app.listen(PORT, () => {
@@ -17,7 +18,8 @@ app.listen(PORT, () => {
 });
 
 app.use('/user', userRouter);
-app.use('/tweet',tweetrouter)
+app.use('/tweet',tweetrouter);
+app.use('/community',communityrouter);
 
 
 

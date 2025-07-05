@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { authmiddleware } from "../Middlewares/auth.middleware.js";
+import { createCommunity } from "../Controllers/Community.controllers.js";
+import { upload } from "../Middlewares/Multer.middlerware.js";
+import { updateCommunity } from "../Controllers/Community.controllers.js";
+const communityrouter =new Router();
+communityrouter.use(authmiddleware);
+communityrouter.route("/create").post(upload.single('picture'),createCommunity);
+communityrouter.route("/update/:community_id").post(upload.single('picture'),updateCommunity);
+export default communityrouter;

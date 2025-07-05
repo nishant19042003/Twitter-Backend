@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const communitySchema=mongoose.Schema({
+const communitySchema=new mongoose.Schema({
     name:{
         type:String,
         required:true,
@@ -8,13 +8,14 @@ const communitySchema=mongoose.Schema({
     bio:{
         type:String,
     },
-    
+    owner:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
+    picture:{
+        type:String,
+        required:true,
+    }
 },{timestamps:true});
-export const Community=new mongoose.model("Community",communitySchema);
-//community->user+community
-//tweet->user+if community than community id  
-//are you member ->find member(user) in community
-//community tweets ->in the tweets find for community 
-//if some tweet is community tweet than it is private 
-//community member schema ->community + user
-//tweet with community id are community tweet.
+export const Community= mongoose.model("Community",communitySchema);
+

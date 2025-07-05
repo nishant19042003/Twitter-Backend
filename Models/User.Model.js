@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema({
         default: false
     },
     refresh_token:{
-        type:String
+        type:String,
+        default:null
     }
 }, {
     timestamps: true
@@ -61,9 +62,9 @@ userSchema.methods.generateAccessToken=function(){
         expiresIn:'1h'
     });
 }
-userSchema.methods.generaterefreshToken=function(){
+userSchema.methods.generateRefreshToken=function(){
     return jwt.sign({id:this._id,username:this.username},process.env.REFRESH_TOKEN_SECRET_KEY,{
-        expiresIn:'1d'
+        expiresIn:'20day'
     });
 }
 export const User=mongoose.model('User',userSchema);

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const tweetschema=mongoose.Schema({
+const tweetschema=new mongoose.Schema({
     owner:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
@@ -21,7 +21,11 @@ const tweetschema=mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Tweet",
         default:null
+    },
+    community:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Community"
     }
     
 },{timestramps:true});
-export const Tweet=mongoose.model('Tweet',tweetSchema);
+export const Tweet= mongoose.model('Tweet',tweetschema);

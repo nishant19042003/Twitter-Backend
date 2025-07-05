@@ -1,11 +1,18 @@
 import { User } from "../Models/User.Model.js";
 import { ApiError } from "../Utils/apiError.js";
 import { ApiResponse } from "../Utils/apiResponse.js";
+import { UploadOnCloudinary } from "../Utils/Cloudinary.js";
+import jwt from "jsonwebtoken"
 // Create a new user
 export const createuser=async(req,res)=>{
     try{
-        const {username,email,name,bio,avatar,password} = req.body;
-        
+        const {username,email,name,bio,password} = req.body;
+        const avatar=req.file?.path;
+        let url="";
+        if (avatar) {
+            const newThumbnail = await UploadOnCloudinary(avatar);
+            url = newThumbnail.url;
+        }
         if(!username || !email || !name || !password){
             return res.status(400).json({error: 'All fields are required'});
         }
@@ -18,9 +25,10 @@ export const createuser=async(req,res)=>{
             email,
             name,
             bio,
-            avatar_url: avatar,
+            avatar_url: url,
             password_hash: password
         });
+
         await newUser.save();
         return res.status(201).json({message: 'User created successfully', user: newUser});
         
@@ -33,10 +41,11 @@ const generateAccessandrefreshtoken=async(user_id)=>{
      //find user
      const user=await User.findById(user_id);
      //user has methoed to generate the access and refresh token
-     const refreshToken=user.generateRefreshToken();
-     const accessToken=user.generateAccessToken();
+     const refreshToken=await user.generateRefreshToken();
+     const accessToken=await user.generateAccessToken();
      //update the refresh token of user
      user.refresh_token=refreshToken;
+     await user.save({validateBeforeSave:false})
      //return the tokens
      return {accessToken,refreshToken};
 }
@@ -56,7 +65,7 @@ export const login=async(req,res)=>{
     }
 
     //varify the password
-    const isPasswordCorrect=await user.isPasswordCorrect(password);
+    const isPasswordCorrect=await user.comparePassword(password);
     if(!isPasswordCorrect){
         throw new ApiError(400,"invalid credentials")
     }
@@ -82,6 +91,7 @@ export const login=async(req,res)=>{
 }
 export const logout=async(req,res)=>{
     //remove refresh token from User
+    
     await  User.findByIdAndUpdate(req.user._id,
     {
         $unset: {
@@ -97,47 +107,89 @@ export const logout=async(req,res)=>{
         httpOnly:true,
         secure:true,
     }  
-
+   
     
     //remove token form  res cookies 
     return res.status(200)
     .clearCookie("accessToken",options)
     .clearCookie("refreshToken",options)
     .json(new ApiResponse(200,{},"user logged out"))
+    
 }
-export const refreshaccesstoken=async(req,res)=>{
-    //incoming refresh token
-    const incomingrefreshtoken=req.cookies.refreshToken||req.body.refreshtoken;
-    //if authenticated then user will be there get user
-    const id=req.user._id;
-    const user=await User.findById(id);
-    if(user.refresh_token!==incomingrefreshtoken){
-        throw new ApiError(400,"bad request");
-    }
-    //generate new accesstoken 
-    const {newaccesstoken,newRefreshToken}=await generateAccessandrefreshtoken(id);
-    //update user
-    //send that in res cookie
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
 
-    return res.staus(200)
-    .cookie("accesstoken",newaccesstoken,options)
-    .cookie("refreshtoken",newrefreshtoken,options)
-    .json(
-        new ApiResponse(
-            200,
-            {newaccessToken, refreshToken: newRefreshToken},
-            "Access token refreshed"
-        )
-    )
-}
+
+export const refreshaccesstoken = async (req, res) => {
+    try {
+        // 1. Get the incoming refresh token
+        const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshtoken;
+
+        // 2. Validate user
+        const decodedrefreshtoken=jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET_KEY
+        );
+        console.log(decodedrefreshtoken.id)
+        // 3. Find user in DB
+        const user = await User.findById(decodedrefreshtoken.id);
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        // 4. Compare stored and incoming refresh token
+        if (user.refresh_token!== incomingRefreshToken) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+
+        // 5. Generate new tokens
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+            await generateAccessandrefreshtoken(user._id);
+
+        // 6. Update refresh token in DB
+        user.refreshtoken = newRefreshToken;
+        await user.save({validateBeforeSave:false})
+
+        // 7. Send new tokens in cookies
+        const options = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None", // if used with cross-origin frontend
+        };
+
+        return res
+            .status(200)
+            .cookie("accessToken", newAccessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        accessToken: newAccessToken,
+                        refreshToken: newRefreshToken,
+                    },
+                    "Access token refreshed"
+                )
+            );
+    } catch (error) {
+        console.error("Refresh token error:", error.message);
+        return res
+            .status(401)
+            .json(new ApiError(401, "Could not refresh access token"));
+    }
+};
+
 export const getvarification=async(req,res)=>{
     //find the user
+    const userid=req?.user._id;
+    
+    const user =await User.findById(userid);
+    console.log(user)
+    user.varified=true;
+    const varifieduser=await user.save({validateBeforeSave:false});
     //update thr user
     //retun response
+    return res.status(200).json(
+        new ApiResponse(200,varifieduser,"you get blue tick")
+    )
 }
 export const updatepassword=async(req,res)=>{
     //take newpassword

@@ -12,8 +12,9 @@ export const togglecommunitymembership=async(req,res)=>{
         Member: userid,
         Community: community_id
     });
-    if(membership){
-        await CommunityMember.findByIdAndDelete(membership._id);
+    
+    if(membership.length>0){
+        await CommunityMember.findByIdAndDelete(membership[0]._id);
         return res.status(200).json(
             new ApiResponse(200,{},"membership closed")
         )

@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { authmiddleware } from "../Middlewares/auth.middleware.js";
+import { createcomment } from "../Controllers/Comment.controller.js";
+import { updatecomment } from "../Controllers/Comment.controller.js";
+import { deletecomment } from "../Controllers/Comment.controller.js";
+import { upload } from "../Middlewares/Multer.middlerware.js";
+const commentRouter=new Router();
+commentRouter.use(authmiddleware);
+commentRouter.route("/create/:tweet_id").post(upload.none(),createcomment);
+commentRouter.route("/update/:comment_id").post(upload.none(),updatecomment);
+commentRouter.route("/delete/:comment_id").post(upload.none(),deletecomment);
+export default commentRouter;

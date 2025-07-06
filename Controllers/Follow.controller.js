@@ -2,31 +2,31 @@ import { Community } from "../Models/Community.Model.js";
 import { ApiError } from "../Utils/apiError.js";
 import { ApiResponse } from "../Utils/apiResponse.js";
 import { Follow } from "../Models/Follow.Model.js";
-export const togglecommunitymembership=async(req,res)=>{
+export const togglefollow=async(req,res)=>{
     //login user
     const userid=req?.user._id;
     //given community 
-    const {other_id}=req.params;
+    const {account_id}=req.params;
     //if combination exist than remove 
     const Following = await Follow.find({
-        F: userid,
-        Community: community_id
+        follower: userid,
+        account: account_id
     });
-    if(membership){
-        await CommunityMember.findByIdAndDelete(membership._id);
+    if(Following.length>0){
+        await Follow.findByIdAndDelete(Following[0]._id);
         return res.status(200).json(
-            new ApiResponse(200,{},"membership closed")
+            new ApiResponse(200,{},"unfollow")
         )
     }
     //else make combo
     else{
-        const newmembership=new CommunityMember({
-            Member:userid,
-            Community:community_id
+        const newfollower=new Follow({
+            follower: userid,
+            account: account_id
         })
-        newmembership.save({ValidedvalidateBeforeSave:false})
+        newfollower.save({ValidedvalidateBeforeSave:false})
         return res.status(200).json(
-            new ApiResponse(200,newmembership,"membership closed")
+            new ApiResponse(200,newfollower,"follow successfuly")
         )
     }
 }

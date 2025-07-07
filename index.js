@@ -20,6 +20,7 @@ import membershiprouter from './Routers/CommunityMember.router.js';
 import followRouter from './Routers/Follow.router.js';
 import likerouter from './Routers/Like.router.js';
 import commentRouter from './Routers/Comment.router.js';
+import messagerouter from './Routers/Message.router.js';
 const PORT = process.env.PORT ;
 connectToDatabase();
 app.listen(PORT, () => {
@@ -33,7 +34,7 @@ app.use('/membership',membershiprouter);
 app.use("/follow",followRouter);
 app.use("/like",likerouter);
 app.use("/comment",commentRouter);
-
+app.use("/message",messagerouter);
 
 
 

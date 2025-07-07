@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const notificationSchema=new mongoose.Schema({
-    owner:{
+    to:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true
@@ -16,10 +16,8 @@ const notificationSchema=new mongoose.Schema({
     },
     content:{
         type:String,
+        default:"you got notification"
     },
-    tweet_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Tweet"
-    }
+    
 },{timestamps:true});
 export const Notification= mongoose.model('Notification',notificationSchema);

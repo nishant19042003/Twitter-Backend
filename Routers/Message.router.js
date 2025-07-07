@@ -1,0 +1,12 @@
+import Router from "express";
+import { authmiddleware } from "../Middlewares/auth.middleware.js";
+import { createmessagewithmedia } from "../Controllers/Message.controller.js";
+import { createmessage } from "../Controllers/Message.controller.js";
+import { upload } from "../Middlewares/Multer.middlerware.js";
+import { deletemessage } from "../Controllers/Message.controller.js";
+const messagerouter=new Router();
+messagerouter.use(authmiddleware);
+messagerouter.route("/sendwithmedia/:receiver_id").post(upload.single("media"),createmessagewithmedia);
+messagerouter.route("/send/:receiver_id").post(upload.none(),createmessage);
+messagerouter.route("/delete/:message_id").post(upload.none(),deletemessage);
+export default messagerouter;

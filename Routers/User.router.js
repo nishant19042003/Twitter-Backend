@@ -6,6 +6,8 @@ import { authmiddleware } from "../Middlewares/auth.middleware.js";
 import { logout } from "../Controllers/User.controller.js";
 import { refreshaccesstoken } from "../Controllers/User.controller.js";
 import {getvarification}  from "../Controllers/User.controller.js"
+import { getprofile } from "../Controllers/User.controller.js";
+import { getallusers } from "../Controllers/User.controller.js";
 const userRouter = Router();
 // Route to create a new user
 userRouter.route("/create").post(upload.single('avatar'), createuser);
@@ -13,4 +15,6 @@ userRouter.route("/login").post(upload.none(),login)
 userRouter.route("/logout").post(authmiddleware,logout)
 userRouter.route("/refresh_access").post(authmiddleware,refreshaccesstoken);
 userRouter.route("/getvarified").post(authmiddleware,getvarification);
+userRouter.route("/getprofile/:userid").get(authmiddleware,getprofile);
+userRouter.route("/getallusers").get(authmiddleware,getallusers);
 export default userRouter;

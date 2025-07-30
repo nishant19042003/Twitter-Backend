@@ -13,6 +13,9 @@ const authmiddleware=async(req,_,next)=>{
         }
         //decoding token
         const decodedToken=await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET_KEY);
+        if(!decodedToken){
+            throw new ApiError(400,"Invalid token");
+        }
         
         //find user by _id
         const user=await User.findById(decodedToken.id);

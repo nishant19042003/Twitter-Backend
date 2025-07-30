@@ -1,15 +1,17 @@
 import mongoose from "mongoose";
-const commentSchema=new mongoose.Schema({
+const replySchema=new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
     tweet:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Tweet"
+        ref:"Tweet",
+        required:true
     },
     content:{
         type:String,
+        required:true
     }
 },{timestamps:true})
-export const Comment=mongoose.model("Comment",commentSchema);
+export const Reply=mongoose.model("Reply",replySchema);

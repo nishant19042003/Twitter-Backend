@@ -156,3 +156,11 @@ export const createcommunitytweet=async(req,res)=>{
 export const deletetweet=async(req,res)=>{
     
 }
+export const getalltweets=async(req,res)=>{
+    //get all tweets
+    const tweets=await Tweet.find().populate("owner").sort({createdAt:-1});
+    if(!tweets){
+        throw new ApiError(404,"no tweets found");
+    }
+    return res.status(200).json(new ApiResponse(200,tweets,"successfully fetched all tweets"));
+}

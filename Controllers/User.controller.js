@@ -30,7 +30,7 @@ export const createuser=async(req,res)=>{
         });
 
         await newUser.save();
-        return res.status(201).json({message: 'User created successfully', user: newUser});
+        return res.status(200).json({message: 'User created successfully', user: newUser});
         
     }
     catch(error){
@@ -61,9 +61,10 @@ export const login=async(req,res)=>{
         $or:[{username,email}]
     })
     if(!user){
+        console.log("user not found")
         throw new ApiError(400,"user not found")
     }
-
+   console.log(user)
     //varify the password
     const isPasswordCorrect=await user.comparePassword(password);
     if(!isPasswordCorrect){
@@ -212,6 +213,36 @@ export const updateuserprofile=async(req,res)=>{
 export const getchannelinfo=async(req,res)=>{
     //tweets,medias,likes,followers,following get all these and send
 }
+import { Tweet } from "../Models/Tweet.Model.js";
+
+import {Follow} from "../Models/Follow.Model.js";
 export const getprofile=async(req,res)=>{
     //get user and send with no password and no rerfeshtoken
+    //all tweets,medias,likes,followers,following
+    const {userid}=req.params;
+    if (!userid) {
+        throw new ApiError(400, "User ID is required");
+    }
+    const user = await User.findById(userid).select("-password -refreshtoken").lean();
+    //tweets with media 
+    const tweets = await Tweet.find({ owner: user._id }).populate('owner').lean();
+    
+    //likes
+    
+    
+    //followers
+    const followers = await Follow.find({ account: user._id });
+    //following
+    const following = await Follow.find({ follower: user._id });
+    return res.status(200).json(
+        new ApiResponse(200,{user,followers,following,tweets,},"user profile")
+    )
+}
+export const getallusers=async(req,res)=>{
+    //get all users except the logged in user
+    const users = await User.find({ _id: { $ne: req.user._id } }).select("-password -refreshtoken").lean();
+    if (!users || users.length === 0) {
+        throw new ApiError(404, "No users found");
+    }
+    return res.status(200).json(new ApiResponse(200, users, "All users fetched successfully"));
 }

@@ -9,7 +9,7 @@ import { getcommunitytweets } from "../Controllers/Tweet.controller.js";
 const tweetrouter=new Router();
 tweetrouter.route("/create").post(authmiddleware,upload.single("media"),createtweet)
 tweetrouter.route("/createretweet/:tweet_id").post(authmiddleware,upload.single("media"),createretweet)
-tweetrouter.route("/create/:community_id").post(authmiddleware,upload.single("media_url"),createcommunitytweet)
+tweetrouter.route("/create/:community_id").post(authmiddleware,upload.single("media"),createcommunitytweet)
 tweetrouter.route("/").get(authmiddleware,getalltweets)
 tweetrouter.route("/communitytweets/:community_id").get(authmiddleware,getcommunitytweets);
 export default tweetrouter;

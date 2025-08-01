@@ -74,3 +74,12 @@ export const deletemessage=async(req,res)=>{
         new ApiResponse(200,{},"message is deleted")
     )
 }
+export const getPairMessages=async(req,res)=>{
+    const user=req?.user._id;
+    const {receiver_id}=req.params;
+    const messages=await Message.find({sender:user,receiver:receiver_id}).populate('sender')
+    .populate('receiver').sort({CreatecreatedAt: 1 });
+    return res.status(200).json(
+        new ApiResponse(200,messages,"your conversetion")
+    )
+}

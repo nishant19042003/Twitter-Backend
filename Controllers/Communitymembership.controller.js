@@ -53,3 +53,13 @@ export const isMember=async(req,res)=>{
         )
     }
 }
+export const communityMembers=async(req,res)=>{
+    const {community_id}=req.params;
+    if(!community_id){
+        throw new ApiError(400,"community_id is required")
+    }
+    const members=await CommunityMember.find({Community:community_id});
+    return res.status(200).json(
+        new ApiResponse(200,members,"community members")
+    )
+}

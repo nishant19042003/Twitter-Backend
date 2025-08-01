@@ -164,3 +164,18 @@ export const getalltweets=async(req,res)=>{
     }
     return res.status(200).json(new ApiResponse(200,tweets,"successfully fetched all tweets"));
 }
+export const getcommunitytweets=async(req,res)=>{
+    const user=req?.user._id;
+    if(!user){
+        throw new ApiError(400,"user not found while fatching community tweets")
+    }
+    const {community_id}=req.params
+    if(!community_id){
+        throw new ApiError(400,"community_id is required!!")
+    }
+    const tweets=await Tweet.find({community:community_id});
+    return res.status(200).json(
+        new ApiResponse(200,tweets,"this are the tweets of this community")
+    )
+
+}

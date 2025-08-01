@@ -31,3 +31,25 @@ export const togglecommunitymembership=async(req,res)=>{
         )
     }
 }
+export const isMember=async(req,res)=>{
+    const user=req?.user._id;
+    if(!user){
+        throw new ApiError(400,"Login buddy!!");
+    }
+    const {community_id}=req.params;
+    if(!community_id){
+        throw new ApiError(400,"communty id is required to membership");
+    }
+    const membership= await CommunityMember.find({Member:user,Community:community_id});
+    console.log(membership);
+    if(membership.length>0){
+        return res.status(200).json(
+            new ApiResponse(200,true,"yes you are member of this community")
+        )
+    }
+    else {
+        return res.status(200).json(
+            new ApiResponse(200,false,"sorry you are not member of this community")
+        )
+    }
+}

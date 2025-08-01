@@ -52,3 +52,26 @@ export const updateCommunity=async(req,res)=>{
     )
 
 }
+export const getallcommunity=async(req,res)=>{
+    const allCommunities=await Community.find();
+    return res.status(200).json(
+        new ApiResponse(200,allCommunities,"We have this much communities")
+    )
+}
+export const getcommunitybyid=async(req,res)=>{
+    const user=req?.user._id;
+    if(!user){
+        throw new ApiError(400,"login please!!...")
+    }
+    const {community_id}=req.params;
+    if(!community_id){
+        throw new ApiError(400,"Community id  is missing!!..")
+    }
+    const community=await Community.findById(community_id);
+    if(!community){
+        throw ApiError(400,"no community found by this id")
+    }
+    return res.status(200).json(
+        new ApiResponse(200,community,"this is community details")
+    )
+}

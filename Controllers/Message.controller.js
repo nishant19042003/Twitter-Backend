@@ -14,14 +14,14 @@ export const createmessagewithmedia=async(req,res)=>{
         throw ApiError(400,"choose receiver please")
     }
     //content and media
-    const {content}=req.params;
-    const media=req?.file?.path;
-    
-    const media_url=await UploadOnCloudinary(media);
+    const {content}=req.body;
+    const tx=req?.file.path;
+    console.log(tx,"mmmmmmmmmmmm")
+    const hh=await UploadOnCloudinary(tx);
     const message=new Message({
         sender:userid,
         receiver:receiver_id,
-        media_url:media_url.url,
+        media_url:hh.url,
         content:content
     })
     message.save({validateBeforeSave:false})
@@ -34,15 +34,15 @@ export const createmessage=async(req,res)=>{
     //sender
     const userid=req?.user._id;
     if(!userid){
-        throw ApiError(400,"login please")
+        throw new ApiError(400,"login please")
     }
     //receiver
     const {receiver_id}=req.params;
     if(!receiver_id){
-        throw ApiError(400,"choose receiver please")
+        throw new ApiError(400,"choose receiver please")
     }
     //content and media
-    const {content}=req.params;
+    const {content}=req.body;
     
     const message=new Message({
         sender:userid,
@@ -77,8 +77,13 @@ export const deletemessage=async(req,res)=>{
 export const getPairMessages=async(req,res)=>{
     const user=req?.user._id;
     const {receiver_id}=req.params;
-    const messages=await Message.find({sender:user,receiver:receiver_id}).populate('sender')
-    .populate('receiver').sort({CreatecreatedAt: 1 });
+    const messages=await Message.find({
+        $or: [
+        { sender: user, receiver: receiver_id },
+        { sender: receiver_id, receiver: user }
+      ]
+    }).
+    sort({CreatecreatedAt: 1 });
     return res.status(200).json(
         new ApiResponse(200,messages,"your conversetion")
     )

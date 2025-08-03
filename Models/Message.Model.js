@@ -12,7 +12,7 @@ const messageSchema = new mongoose.Schema({
     },
     content:{
         type: String,
-        required: true
+        required: true,
     },
     media_url:{
         type: String,
